@@ -2,8 +2,8 @@ import random
 import gym
 import numpy as np
 from collections import deque
-from keras.models import Sequential
-from keras.layers import Dense
+from keras.models import Model
+from keras.layers import Input, Dense
 from keras.optimizers import Adam
 
 
@@ -21,12 +21,13 @@ class DQNAgent:
     self.model = self._build_model()
 
 
+  # Neural Net for Deep-Q learning Model
   def _build_model(self):
-    # Neural Net for Deep-Q learning Model
-    model = Sequential()
-    model.add(Dense(24, input_dim=self.state_size, activation='relu'))
-    model.add(Dense(24, activation='relu'))
-    model.add(Dense(self.action_size, activation='linear'))
+    inputs = Input(shape=(self.state_size,))
+    x = Dense(24, activation='relu')(inputs)
+    x = Dense(24, activation='relu')(x)
+    predicitons = Dense(self.action_size, activation='linear')(x)
+    model = Model(inputs=inputs, outputs=predicitons)
     model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
     return model
 
