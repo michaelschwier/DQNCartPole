@@ -29,7 +29,7 @@ class DQNAgent:
     x = Dense(24, activation='relu')(x)
     predictions = Dense(self.action_size, activation='linear')(x)
     masked_predictions = Multiply()([predictions, action_inputs])
-    model = Model(inputs=[state_inputs, action_inputs], outputs=predictions)
+    model = Model(inputs=[state_inputs, action_inputs], outputs=masked_predictions)
     model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
     return model
 
