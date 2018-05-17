@@ -50,14 +50,23 @@ class DQNAgent:
 
   def replay(self, batch_size):
     minibatch = random.sample(self.memory, batch_size)
+    states = []
+    actions = []
+    targets = []
     for state, action_one_hot, reward, next_state, game_over in minibatch:
       target_values = np.empty(action_one_hot.shape, dtype=np.float32)
       target_values.fill(reward)
       if not game_over:
         est_values = self.model.predict([next_state, np.ones(action_one_hot.shape)])
         target_values = target_values + self.gamma * np.amax(est_values, axis=1)
-      self.model.fit([state, action_one_hot], action_one_hot * target_values, 
-                     epochs=1, batch_size=len(state), verbose=0)
+      states.append(state)
+      actions.append(action_one_hot)
+      targets.append(target_values)
+    states = np.concatenate(states)
+    actions = np.concatenate(actions)
+    targets = np.concatenate(targets)
+    self.model.fit([states, actions], actions * targets, 
+                    epochs=1, batch_size=len(state), verbose=0)
     if self.exploration_rate > self.exploration_rate_min:
       self.exploration_rate *= self.exploration_rate_decay
 
